@@ -1,0 +1,8 @@
+shellEmulator: true
+# shamefullyHoist: true
+# ignoreWorkspaceRootCheck: true
+# packages:
+#   - playground
+#   - docs
+#   - packages/*
+#   - examples/*
