@@ -29,8 +29,8 @@
     "build": "turbo build",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --cache --fix",
-    "prepack": "pnpm run build",
     "prepare": "simple-git-hooks",
+    "prerelease": "pnpm run build",
     "release": "changeset publish",
     "typecheck": "tsc"
   },
