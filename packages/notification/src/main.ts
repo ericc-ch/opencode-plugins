@@ -108,3 +108,5 @@ export const notification = (options: NotificationPluginOptions): Plugin => {
     }
   }
 }
+
+export default notification
