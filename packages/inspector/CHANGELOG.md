@@ -1,5 +1,11 @@
 # opencode-plugin-inspector
 
+## 0.0.7
+
+### Patch Changes
+
+- move abort listener to global scope
+
 ## 0.0.6
 
 ### Patch Changes
