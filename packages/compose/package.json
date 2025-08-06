@@ -1,0 +1,44 @@
+{
+  "name": "opencode-plugin-compose",
+  "version": "0.0.4",
+  "description": "opencode-plugin-notification",
+  "keywords": [
+    "opencode",
+    "plugin"
+  ],
+  "homepage": "https://github.com/ericc-ch/opencode-plugins",
+  "bugs": "https://github.com/ericc-ch/opencode-plugins/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericc-ch/opencode-plugins.git"
+  },
+  "author": {
+    "name": "Erick Christian",
+    "email": "erickchristian48@gmail.com"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "default": "./dist/main.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "release": "pnpm publish --access public"
+  },
+  "devDependencies": {
+    "tsup": "catalog:"
+  },
+  "optionalDependencies": {
+    "@opencode-ai/plugin": "catalog:"
+  },
+  "packageManager": "pnpm@10.14.0",
+  "publishConfig": {
+    "access": "public"
+  }
+}
