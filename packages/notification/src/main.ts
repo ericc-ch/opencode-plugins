@@ -1,7 +1,5 @@
 import type { Plugin } from "@opencode-ai/plugin"
 
-import child from "node:child_process"
-
 type Client = Parameters<Plugin>[0]["client"]
 
 export interface NotificationPluginOptions {
@@ -11,6 +9,7 @@ export interface NotificationPluginOptions {
    */
   idleTime?: number
   notificationCommand?: Array<string>
+  additionalCommands?: Array<Array<string>>
   getMessage?: (params: {
     sessionID: string
     client: Client
@@ -19,16 +18,9 @@ export interface NotificationPluginOptions {
 
 const DEFAULT_IDLE_TIME: NotificationPluginOptions["idleTime"] = 1000 * 60
 const DEFAULT_NOTIFICATION_COMMAND: NotificationPluginOptions["notificationCommand"] =
-  [
-    "notify-send",
-    "--app-name",
-    "opencode",
-    "$MESSAGE",
-    "&&",
-    "canberra-gtk-play",
-    "-i",
-    "complete",
-  ]
+  ["notify-send", "--app-name", "opencode"]
+const DEFAULT_ADDITIONAL_COMMANDS: NotificationPluginOptions["additionalCommands"] =
+  [["canberra-gtk-play", "-i", "complete"]]
 
 const defaultGetMessage: NotificationPluginOptions["getMessage"] = async ({
   sessionID,
@@ -46,16 +38,19 @@ const defaultGetMessage: NotificationPluginOptions["getMessage"] = async ({
   return message
 }
 
-let lastUserMessage = Date.now()
-export const notification = (options: NotificationPluginOptions): Plugin => {
+export const notification = (
+  options: NotificationPluginOptions = {},
+): Plugin => {
   const idleTime = options.idleTime ?? DEFAULT_IDLE_TIME
   const notificationCommand =
     options.notificationCommand ?? DEFAULT_NOTIFICATION_COMMAND
+  const additionalCommands =
+    options.additionalCommands ?? DEFAULT_ADDITIONAL_COMMANDS
   const getMessage = options.getMessage ?? defaultGetMessage
 
-  return ({ client }) => {
-    // Function scope is also executed once, during init
+  let lastUserMessage = Date.now()
 
+  return ({ client }) => {
     return {
       event: async ({ event }) => {
         if (
@@ -98,11 +93,10 @@ export const notification = (options: NotificationPluginOptions): Plugin => {
             },
           })
 
-          child.spawnSync(notificationCommand.join(" "), {
-            env: {
-              MESSAGE: message,
-            },
-          })
+          Bun.spawnSync([...notificationCommand, message])
+          for (const command of additionalCommands) {
+            Bun.spawnSync(command)
+          }
         }
       },
     }

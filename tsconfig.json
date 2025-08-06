@@ -5,10 +5,10 @@
     "module": "ESNext",
     "skipLibCheck": true,
     "allowJs": true,
-    
+
     "moduleResolution": "Bundler",
     "moduleDetection": "force",
-    "erasableSyntaxOnly": true, 
+    "erasableSyntaxOnly": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
@@ -17,5 +17,15 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true
-  }
+  },
+
+  "files": [],
+  "references": [
+    {
+      "path": "./packages/inspector"
+    },
+    {
+      "path": "./tsconfig.generic.json"
+    }
+  ]
 }

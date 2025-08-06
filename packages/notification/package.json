@@ -28,6 +28,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "dev": "tsup --watch",
     "release": "pnpm publish --access public"
   },
   "devDependencies": {

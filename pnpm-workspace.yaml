@@ -5,5 +5,4 @@ packages:
 
 catalog:
   "@opencode-ai/plugin": "0.3.x"
-  tsup: ^8.5.0
-
+  tsup: "8.x.x"
