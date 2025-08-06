@@ -1,5 +1,11 @@
 # opencode-plugin-notification
 
+## 0.0.5
+
+### Patch Changes
+
+- 4d5920d: add additional commands as option
+
 ## 0.0.4
 
 ### Patch Changes
