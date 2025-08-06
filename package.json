@@ -27,6 +27,8 @@
   ],
   "scripts": {
     "build": "turbo build",
+    "changeset:add": "changeset add",
+    "changeset:version": "changeset version",
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --cache --fix",
     "prepare": "simple-git-hooks",
