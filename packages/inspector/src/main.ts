@@ -3,8 +3,8 @@ import type { ReadableStreamController } from "node:stream/web"
 
 import { Hono } from "hono"
 import { streamSSE } from "hono/streaming"
-import fs from "node:fs"
-import path from "node:path"
+
+import html from "./inspector.html"
 
 export interface InspectorPluginOptions {
   /**
@@ -32,11 +32,7 @@ export const inspector = (options: InspectorPluginOptions = {}): Plugin => {
 
     const app = new Hono()
       .get("/", (c) => {
-        const html = fs.readFileSync(
-          path.join(import.meta.dirname, "./assets/inspector-view.html"),
-          "utf8",
-        )
-
+        // @ts-expect-error html is loaded via tsup, not bun
         return c.text(html, 200, {
           "Content-Type": "text/html",
         })

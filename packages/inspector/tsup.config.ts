@@ -2,7 +2,9 @@ import { defineConfig } from "tsup"
 
 export default defineConfig({
   entry: ["src/main.ts"],
-  publicDir: "/src/assets",
+  loader: {
+    ".html": "text",
+  },
 
   format: ["esm"],
   target: "esnext",
