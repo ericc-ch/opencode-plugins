@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+
+  "compilerOptions": {
+    "composite": true,
+    
+    "jsx": "react-jsx",
+    "jsxImportSource": "hono/jsx"
+  },
+  
+  "include": [
+    "src/**/*"
+  ]
+}

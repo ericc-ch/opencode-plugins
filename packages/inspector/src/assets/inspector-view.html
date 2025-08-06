@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Inspector</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <script type="importmap">
+      {
+        "imports": {
+          "fetch-event-stream": "https://esm.sh/fetch-event-stream@0.1.5",
+          "react": "https://esm.sh/react@19.1.0",
+          "react-dom/client": "https://esm.sh/react-dom@19.1.0/client"
+        }
+      }
+    </script>
+    <script type="module" src="https://esm.sh/tsx"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      import { stream } from "fetch-event-stream";
+      import React, { useState, useEffect } from "react";
+      import { createRoot } from "react-dom/client";
+
+      const HookEvent = ({ event, timestamp }) => {
+        const [expanded, setExpanded] = useState(false);
+        
+        const formatData = (data) => {
+          try {
+            return JSON.stringify(data, null, 2);
+          } catch {
+            return String(data);
+          }
+        };
+
+        return (
+          <div className="border border-gray-200 rounded-lg p-4 mb-3 bg-white shadow-sm">
+            <div 
+              className="flex items-center justify-between cursor-pointer"
+              onClick={() => setExpanded(!expanded)}
+            >
+              <div className="flex items-center space-x-3">
+                <span className="px-2 py-1 bg-blue-100 text-blue-800 text-sm font-medium rounded">
+                  {event.hook || 'unknown'}
+                </span>
+                {event.hook === 'event' && (
+                  <span className="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded">
+                    {event.input.event.type || 'unknown event'}
+                  </span>
+                )}
+                <span className="text-gray-500 text-sm">
+                  {new Date(timestamp).toLocaleTimeString()}
+                </span>
+              </div>
+              <svg 
+                className={`w-4 h-4 transform transition-transform ${expanded ? 'rotate-180' : ''}`}
+                fill="none" 
+                stroke="currentColor" 
+                viewBox="0 0 24 24"
+              >
+                <path 
+                  strokeLinecap="round" 
+                  strokeLinejoin="round" 
+                  strokeWidth={2} 
+                  d="M19 9l-7 7-7-7" 
+                />
+              </svg>
+            </div>
+            {expanded && (
+              <div className="mt-3 pt-3 border-t border-gray-100">
+                {event.input && (
+                  <div className="mb-3">
+                    <h4 className="text-sm font-medium text-gray-700 mb-1">Input:</h4>
+                    <pre className="bg-gray-50 p-2 rounded text-xs overflow-auto">
+                      {formatData(event.input)}
+                    </pre>
+                  </div>
+                )}
+                {event.output && (
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-700 mb-1">Output:</h4>
+                    <pre className="bg-gray-50 p-2 rounded text-xs overflow-auto">
+                      {formatData(event.output)}
+                    </pre>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        );
+      };
+
+      const Inspector = () => {
+        const [events, setEvents] = useState([]);
+        const [status, setStatus] = useState('connecting');
+        const [filterHook, setFilterHook] = useState('');
+        const [filterEventType, setFilterEventType] = useState('');
+        const [showPing, setShowPing] = useState(false);
+
+        useEffect(() => {
+          const connectToHooks = async () => {
+            try {
+              setStatus('connecting');
+              console.log("Connecting to /hooks SSE endpoint...");
+
+              const eventStream = await stream("/hooks");
+              setStatus('connected');
+
+              const processEvents = async () => {
+                for await (const event of eventStream) {
+                  if (event.data) {
+                    try {
+                      const parsedData = JSON.parse(event.data);
+                      setEvents(prev => [{
+                        ...parsedData,
+                        timestamp: Date.now(),
+                        id: Math.random().toString(36).substr(2, 9)
+                      }, ...prev]);
+                    } catch (error) {
+                      console.error("Error parsing event data:", error);
+                    }
+                  }
+                }
+              };
+
+              processEvents().catch(error => {
+                console.error("Error processing events:", error);
+                setStatus('error');
+              });
+
+            } catch (error) {
+              console.error("Error connecting to SSE:", error);
+              setStatus('error');
+            }
+          };
+
+          connectToHooks();
+        }, []);
+
+        const getStatusColor = () => {
+          switch (status) {
+            case 'connected': return 'text-green-600';
+            case 'connecting': return 'text-yellow-600';
+            case 'error': return 'text-red-600';
+            default: return 'text-gray-600';
+          }
+        };
+
+        // Get unique hook names and event types for dropdowns
+        const uniqueHooks = [...new Set(events.map(e => e.hook).filter(Boolean))].sort();
+        const uniqueEventTypes = [...new Set(
+          events
+            .filter(e => e.hook === 'event' && e.input?.event.type)
+            .map(e => e.input.type)
+        )].sort();
+
+        // Filter events based on current filters
+        const filteredEvents = events.filter(event => {
+          // Filter out ping events if not showing them
+          if (event.hook === 'ping' && !showPing) return false;
+          
+          // Filter by hook name
+          if (filterHook && event.hook !== filterHook) return false;
+          
+          // Filter by event type (only applies to 'event' hooks)
+          if (filterEventType && event.hook === 'event' && event.input?.type !== filterEventType) return false;
+          
+          return true;
+        });
+
+        return (
+          <div className="min-h-screen bg-gray-50 p-6">
+            <div className="max-w-4xl mx-auto mb-6">
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                opencode Inspector
+              </h1>
+              <div className="flex items-center space-x-2 mb-4">
+                <div className={`w-2 h-2 rounded-full ${
+                  status === 'connected' ? 'bg-green-500' : 
+                  status === 'connecting' ? 'bg-yellow-500' : 'bg-red-500'
+                }`} />
+                <span className={`text-sm font-medium ${getStatusColor()}`}>
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </span>
+                <span className="text-sm text-gray-500">
+                  ({events.length} total, {filteredEvents.length} shown)
+                </span>
+              </div>
+              
+              {/* Filters */}
+              <div className="bg-white p-4 rounded-lg shadow-sm border border-gray-200 mb-4">
+                <div className="flex flex-wrap gap-4 items-center">
+                  <div className="flex items-center space-x-2">
+                    <label className="text-sm font-medium text-gray-700">Hook:</label>
+                    <select 
+                      value={filterHook} 
+                      onChange={(e) => {
+                        setFilterHook(e.target.value);
+                        if (e.target.value !== 'event') setFilterEventType('');
+                      }}
+                      className="border border-gray-300 rounded px-2 py-1 text-sm"
+                    >
+                      <option value="">All hooks</option>
+                      {uniqueHooks.map(hook => (
+                        <option key={hook} value={hook}>{hook}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  {filterHook === 'event' && (
+                    <div className="flex items-center space-x-2">
+                      <label className="text-sm font-medium text-gray-700">Event Type:</label>
+                      <select 
+                        value={filterEventType} 
+                        onChange={(e) => setFilterEventType(e.target.value)}
+                        className="border border-gray-300 rounded px-2 py-1 text-sm"
+                      >
+                        <option value="">All event types</option>
+                        {uniqueEventTypes.map(type => (
+                          <option key={type} value={type}>{type}</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  
+                  <div className="flex items-center space-x-2">
+                    <input 
+                      type="checkbox" 
+                      id="showPing" 
+                      checked={showPing} 
+                      onChange={(e) => setShowPing(e.target.checked)}
+                      className="rounded"
+                    />
+                    <label htmlFor="showPing" className="text-sm font-medium text-gray-700">
+                      Show ping events
+                    </label>
+                  </div>
+                  
+                  {(filterHook || filterEventType || !showPing) && (
+                    <button 
+                      onClick={() => {
+                        setFilterHook('');
+                        setFilterEventType('');
+                        setShowPing(false);
+                      }}
+                      className="text-sm text-blue-600 hover:text-blue-800"
+                    >
+                      Clear filters
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="max-w-4xl mx-auto">
+              {filteredEvents.length === 0 ? (
+                <div className="text-center py-12 text-gray-500">
+                  {events.length === 0 ? 'Waiting for events...' : 'No events match the current filters.'}
+                </div>
+              ) : (
+                filteredEvents.map(event => (
+                  <HookEvent 
+                    key={event.id}
+                    event={event}
+                    timestamp={event.timestamp}
+                  />
+                ))
+              )}
+            </div>
+          </div>
+        );
+      };
+
+      const root = createRoot(document.getElementById('root'));
+      root.render(<Inspector />);
+    </script>
+  </body>
+</html>

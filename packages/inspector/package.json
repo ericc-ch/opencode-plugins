@@ -1,0 +1,52 @@
+{
+  "name": "opencode-plugin-inspector",
+  "version": "0.0.4",
+  "description": "opencode-plugin-inspector",
+  "keywords": [
+    "opencode",
+    "plugin"
+  ],
+  "homepage": "https://github.com/ericc-ch/opencode-plugins",
+  "bugs": "https://github.com/ericc-ch/opencode-plugins/issues",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ericc-ch/opencode-plugins.git"
+  },
+  "author": {
+    "name": "Erick Christian",
+    "email": "erickchristian48@gmail.com"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/main.d.ts",
+      "default": "./dist/main.js"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "release": "pnpm publish --access public"
+  },
+  "dependencies": {
+    "hono": "^4.8.12"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "fetch-event-stream": "^0.1.5",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1",
+    "tsup": "catalog:"
+  },
+  "optionalDependencies": {
+    "@opencode-ai/plugin": "catalog:"
+  },
+  "packageManager": "pnpm@10.14.0",
+  "publishConfig": {
+    "access": "public"
+  }
+}
