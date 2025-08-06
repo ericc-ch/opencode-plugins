@@ -4,6 +4,6 @@ packages:
   - packages/*
 
 catalog:
-  "@opencode-ai/plugin": "^0.3.130"
+  "@opencode-ai/plugin": "0.3.x"
   tsup: ^8.5.0
 
