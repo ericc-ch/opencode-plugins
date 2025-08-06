@@ -6,6 +6,14 @@ import { streamSSE } from "hono/streaming"
 
 import html from "./inspector.html"
 
+const activeResources = new Set<{ cleanup: () => void }>()
+
+process.on("exit", () => {
+  for (const resource of activeResources) {
+    resource.cleanup()
+  }
+})
+
 export interface InspectorPluginOptions {
   /**
    * @default 6969
@@ -77,10 +85,13 @@ export const inspector = (options: InspectorPluginOptions = {}): Plugin => {
       port,
     })
 
-    process.on("exit", () => {
-      clearInterval(interval)
-      void server.stop()
-    })
+    const resourceCleanup = {
+      cleanup: () => {
+        clearInterval(interval)
+        void server.stop()
+      },
+    }
+    activeResources.add(resourceCleanup)
 
     return {
       event: (input) => {
