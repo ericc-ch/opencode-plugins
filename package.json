@@ -56,9 +56,6 @@
     "turbo": "^2.5.5",
     "typescript": "^5.9.2"
   },
-  "optionalDependencies": {
-    "opencode-plugin-notification": "workspace:*"
-  },
   "packageManager": "pnpm@10.14.0",
   "pnpm": {
     "onlyBuiltDependencies": [
