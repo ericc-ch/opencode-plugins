@@ -1,8 +1,9 @@
 shellEmulator: true
-# shamefullyHoist: true
-# ignoreWorkspaceRootCheck: true
-# packages:
-#   - playground
-#   - docs
-#   - packages/*
-#   - examples/*
+
+packages:
+  - packages/*
+
+catalog:
+  "@opencode-ai/plugin": "^0.3.130"
+  tsup: ^8.5.0
+

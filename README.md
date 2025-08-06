@@ -1,6 +1,6 @@
 # pkg-placeholder
 
-_description_
+haha
 
 > **Note**:
 > Replace `pkg-placeholder` and `_description_` globally to use this template.
