@@ -27,15 +27,12 @@
   ],
   "scripts": {
     "build": "turbo build",
-    "changeset:add": "changeset add",
-    "changeset:version": "changeset version",
     "dev": "turbo dev",
     "lint": "eslint --cache",
     "lint:all": "eslint . --cache",
     "lint:fix": "eslint --cache --fix",
     "prepare": "simple-git-hooks",
     "prerelease": "pnpm run build",
-    "release": "changeset publish",
     "typecheck": "tsc"
   },
   "simple-git-hooks": {
@@ -52,6 +49,7 @@
     "eslint": "^9.33.0",
     "lint-staged": "^16.1.5",
     "simple-git-hooks": "^2.13.1",
+    "taze": "^19.1.0",
     "tsup": "^8.5.0",
     "turbo": "^2.5.5",
     "typescript": "^5.9.2"
