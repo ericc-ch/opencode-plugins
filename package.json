@@ -33,6 +33,7 @@
     "lint:fix": "eslint --cache --fix",
     "prepare": "simple-git-hooks",
     "prerelease": "pnpm run build",
+    "release": "changeset publish",
     "typecheck": "tsc"
   },
   "simple-git-hooks": {
