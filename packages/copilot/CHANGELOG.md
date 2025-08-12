@@ -1,5 +1,11 @@
 # opencode-plugin-copilot
 
+## 0.0.4
+
+### Patch Changes
+
+- use xml tags for better prompting
+
 ## 0.0.3
 
 ### Patch Changes
