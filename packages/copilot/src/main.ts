@@ -5,13 +5,12 @@ interface ForceAgentOptions {
 }
 
 const DEFAULT_SELF_MESSAGE: ForceAgentOptions["selfMessage"] = (original) =>
-  `
-<query>
-  ${original}
-</query>
+  `<query>${original}</query>
 
-I will now answer the query
-`.trim()
+I will now answer the query:
+
+
+`
 
 export const forceAgent = (options: ForceAgentOptions = {}): Plugin => {
   const selfMessage = options.selfMessage ?? DEFAULT_SELF_MESSAGE
@@ -62,10 +61,27 @@ export const forceAgent = (options: ForceAgentOptions = {}): Plugin => {
         }
 
         output.message.role = "assistant"
-        const textPart = output.parts.find((part) => part.type === "text")
 
-        if (!textPart) return
-        textPart.text = selfMessage(textPart.text)
+        const textParts = output.parts.filter((part) => part.type === "text")
+        const nonTextParts = output.parts.filter((part) => part.type !== "text")
+
+        const newPart = textParts.at(0)
+        if (!newPart) {
+          await client.app.log({
+            body: {
+              level: "error",
+              message: "Text part is not found",
+              service: "copilot-force-agent",
+            },
+          })
+          throw new Error("Text part is not found")
+        }
+
+        newPart.text = selfMessage(
+          textParts.map((part) => part.text).join("\n"),
+        )
+
+        output.parts = [newPart, ...nonTextParts]
       },
     }
   }
