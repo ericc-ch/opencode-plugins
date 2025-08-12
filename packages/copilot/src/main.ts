@@ -7,9 +7,7 @@ interface ForceAgentOptions {
 const DEFAULT_SELF_MESSAGE: ForceAgentOptions["selfMessage"] = (original) =>
   `<query>${original}</query>
 
-I will now answer the query:
-
-`
+I will now answer the query:`
 
 export const forceAgent = (options: ForceAgentOptions = {}): Plugin => {
   const selfMessage = options.selfMessage ?? DEFAULT_SELF_MESSAGE
@@ -59,8 +57,6 @@ export const forceAgent = (options: ForceAgentOptions = {}): Plugin => {
           return
         }
 
-        output.message.role = "assistant"
-
         const textParts = output.parts.filter((part) => part.type === "text")
         const nonTextParts = output.parts.filter((part) => part.type !== "text")
 
@@ -80,6 +76,7 @@ export const forceAgent = (options: ForceAgentOptions = {}): Plugin => {
           textParts.map((part) => part.text).join("\n"),
         )
 
+        output.message.role = "assistant"
         output.parts = [newPart, ...nonTextParts]
       },
     }
