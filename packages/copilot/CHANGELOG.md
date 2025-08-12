@@ -1,5 +1,11 @@
 # opencode-plugin-copilot
 
+## 0.0.5
+
+### Patch Changes
+
+- reorganize
+
 ## 0.0.4
 
 ### Patch Changes
