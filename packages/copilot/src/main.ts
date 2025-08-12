@@ -9,7 +9,6 @@ const DEFAULT_SELF_MESSAGE: ForceAgentOptions["selfMessage"] = (original) =>
 
 I will now answer the query:
 
-
 `
 
 export const forceAgent = (options: ForceAgentOptions = {}): Plugin => {
