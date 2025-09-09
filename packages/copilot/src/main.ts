@@ -5,9 +5,7 @@ interface ForceAgentOptions {
 }
 
 const DEFAULT_SELF_MESSAGE: ForceAgentOptions["selfMessage"] = (original) =>
-  `<query>${original}</query>
-
-I will now answer the query:`
+  `<user_query>${original}</user_query>`
 
 export const forceAgent = (options: ForceAgentOptions = {}): Plugin => {
   const selfMessage = options.selfMessage ?? DEFAULT_SELF_MESSAGE
